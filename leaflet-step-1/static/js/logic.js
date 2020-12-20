@@ -7,20 +7,38 @@ d3.json(queryUrl, function (data) {
     createFeatures(data.features);
 });
 
+// Define a markerSize function that will give each earthquake different radius based on its magnitude
+function markerSize(magnitude) {
+    return magnitude * 10;
+  }
+
 function createFeatures(earthquakeData) {
 
     // Define a function we want to run once for each feature in the features array
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer) {
-        
+
         layer.bindPopup("<h3>" + feature.properties.place +
             "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
     }
 
+    var geojsonMarkerOptions = {
+        radius: 8,
+        fillColor: "#ff7800",
+        color: "none",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+    
     // Create a GeoJSON layer containing the features array on the earthquakeData object
     // Run the onEachFeature function once for each piece of data in the array
     var earthquakes = L.geoJSON(earthquakeData, {
-        onEachFeature: onEachFeature
+        onEachFeature: onEachFeature,
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        }
+        
     });
 
     // Sending our earthquakes layer to the createMap function
@@ -83,4 +101,6 @@ function createMap(earthquakes) {
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap);
+    
 }
+
