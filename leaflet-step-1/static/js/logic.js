@@ -1,5 +1,6 @@
 // Store our API endpoint inside queryUrl
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+var queryUrl_2 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function (data) {
@@ -7,43 +8,65 @@ d3.json(queryUrl, function (data) {
     createFeatures(data.features);
 });
 
+// d3.json(queryUrl_2, function (data) {
+//     // Once we get a response, send the data.features object to the createFeatures function
+//     createFeatures(data.features);
+// });
+
 // Define a markerSize function that will give each earthquake different radius based on its magnitude
 function markerSize(magnitude) {
-    return magnitude * 10;
-  }
+    if (magnitude === 0) {
+        return 1;
+    }
+    return magnitude * 4;
+}
 
 function createFeatures(earthquakeData) {
-
+    console.log(earthquakeData)
     // Define a function we want to run once for each feature in the features array
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer) {
 
         layer.bindPopup("<h3>" + feature.properties.place +
             "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+
+
+        var geojsonMarkerOptions = {
+            radius: markerSize(feature.properties.mag),
+            fillColor: "#ff7800",
+            color: "none",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+        var earthquakes = L.geoJSON(earthquakeData, {
+            onEachFeature: onEachFeature,
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, geojsonMarkerOptions);
+            }
+
+        });
+        createMap(earthquakes);
+        earthquakes.addTo(myMap);
     }
 
-    var geojsonMarkerOptions = {
-        radius: 8,
-        fillColor: "#ff7800",
-        color: "none",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    
     // Create a GeoJSON layer containing the features array on the earthquakeData object
     // Run the onEachFeature function once for each piece of data in the array
-    var earthquakes = L.geoJSON(earthquakeData, {
-        onEachFeature: onEachFeature,
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        }
-        
-    });
 
     // Sending our earthquakes layer to the createMap function
-    createMap(earthquakes);
+
 }
+
+// function createFaultLine(faultLineData){
+//     function onEachFeature(feature,layer){
+//         return feature.coordinates
+//     }
+//     var faultLine = L.geoJSON(faultLineData,{
+//         onEachFeature: onEachFeature,
+//     })
+
+//     createMap(faultLine);
+// }
 
 function createMap(earthquakes) {
 
@@ -83,7 +106,8 @@ function createMap(earthquakes) {
 
     // Create overlay object to hold our overlay layer
     var overlayMaps = {
-        Earthquakes: earthquakes
+        "Earthquakes": earthquakes,
+        // "Fault Line": faultLine
     };
 
     // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -101,6 +125,6 @@ function createMap(earthquakes) {
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap);
-    
+
 }
 
