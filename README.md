@@ -8,7 +8,7 @@ A map was created using Leaflet that plots all of the earthquakes from the datas
 * A legend was created that provide context for the map data.
 
 ### Display Dashboard
-![dashboard](leaflet/static/img/gif.gif?raw=true)
+![dashboard](Step-1/static/img/gif.gif?raw=true)
 
 ## Disclaimer
 The resources of this master branch are only for educational purposes. All reserved rights belong to UCSD Data Science and Visualization Boot Camp.
