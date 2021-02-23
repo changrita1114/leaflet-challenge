@@ -48,8 +48,10 @@ function createFeatures(earthquakeData) {
         var geojsonMarkerOptions = {
             radius: markerSize(feature.properties.mag),
             fillColor: getColor(feature.properties.mag),
-            color: "none",
-            fillOpacity: 0.8
+            color: "#000000",
+            fillOpacity: 0.8,
+            stroke: true,
+            weight: 0.5
         }
         return geojsonMarkerOptions
     }
@@ -113,7 +115,7 @@ function createMap(earthquakes) {
         center: [
             37.09, -95.71
         ],
-        zoom: 4,
+        zoom: 3,
         layers: [satellitemap, earthquakes]
     });
 
@@ -121,7 +123,7 @@ function createMap(earthquakes) {
     // Pass in baseMaps and overlayMaps
     // Add the layer control to the map
     L.control.layers(baseMaps, overlayMaps, {
-        collapsed: false
+        collapsed: true
     }).addTo(myMap);
 
     // Add legend
